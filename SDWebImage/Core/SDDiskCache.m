@@ -64,6 +64,7 @@ static NSString * const SDDiskCacheExtendedAttributeName = @"com.hackemist.SDDis
     NSString *filePath = [self cachePathForKey:key];
     NSData *data = [NSData dataWithContentsOfFile:filePath options:self.config.diskCacheReadingOptions error:nil];
     if (data) {
+        NSLog(@"SDDiskCache returning dataForKey returning data, key: %s", key);
         return data;
     }
     
@@ -71,9 +72,11 @@ static NSString * const SDDiskCacheExtendedAttributeName = @"com.hackemist.SDDis
     // checking the key with and without the extension
     data = [NSData dataWithContentsOfFile:filePath.stringByDeletingPathExtension options:self.config.diskCacheReadingOptions error:nil];
     if (data) {
+        NSLog(@"SDDiskCache dataForKey returning data, key: %s", key);
         return data;
     }
-    
+
+    NSLog(@"SDDiskCache returning dataForKey returning nil, key: %s", key);
     return nil;
 }
 
@@ -88,7 +91,8 @@ static NSString * const SDDiskCacheExtendedAttributeName = @"com.hackemist.SDDis
     NSString *cachePathForKey = [self cachePathForKey:key];
     // transform to NSURL
     NSURL *fileURL = [NSURL fileURLWithPath:cachePathForKey isDirectory:NO];
-    
+
+    NSLog(@"SDDiskCache setData forKey: %s", key);
     [data writeToURL:fileURL options:self.config.diskCacheWritingOptions error:nil];
     
     // disable iCloud backup
@@ -126,10 +130,12 @@ static NSString * const SDDiskCacheExtendedAttributeName = @"com.hackemist.SDDis
 - (void)removeDataForKey:(NSString *)key {
     NSParameterAssert(key);
     NSString *filePath = [self cachePathForKey:key];
+    NSLog(@"SDDiskCache removeDataForKey, key: %s", key);
     [self.fileManager removeItemAtPath:filePath error:nil];
 }
 
 - (void)removeAllData {
+    NSLog(@"SDDiskCache removeAllData");
     [self.fileManager removeItemAtPath:self.diskCachePath error:nil];
     [self.fileManager createDirectoryAtPath:self.diskCachePath
             withIntermediateDirectories:YES
@@ -199,6 +205,7 @@ static NSString * const SDDiskCacheExtendedAttributeName = @"com.hackemist.SDDis
     }
     
     for (NSURL *fileURL in urlsToDelete) {
+        NSLog(@"SDDiskCache removeExpiredData, fileUrl: %@", fileURL);
         [self.fileManager removeItemAtURL:fileURL error:nil];
     }
     
@@ -217,6 +224,7 @@ static NSString * const SDDiskCacheExtendedAttributeName = @"com.hackemist.SDDis
         
         // Delete files until we fall below our desired cache size.
         for (NSURL *fileURL in sortedFiles) {
+            NSLog(@"SDDiskCache removeExpiredData, (cache size too big) fileUrl: %@", fileURL);
             if ([self.fileManager removeItemAtURL:fileURL error:nil]) {
                 NSDictionary<NSString *, id> *resourceValues = cacheFiles[fileURL];
                 NSNumber *totalAllocatedSize = resourceValues[NSURLTotalFileAllocatedSizeKey];

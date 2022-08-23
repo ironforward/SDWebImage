@@ -233,6 +233,7 @@ static NSString * _defaultDiskCacheDirectory;
     // if memory cache is enabled
     if (image && toMemory && self.config.shouldCacheImagesInMemory) {
         NSUInteger cost = image.sd_memoryCost;
+        NSLog(@"storeImage memory, key: %s", key);
         [self.memoryCache setObject:image forKey:key cost:cost];
     }
     
@@ -330,7 +331,7 @@ static NSString * _defaultDiskCacheDirectory;
     if (!imageData || !key) {
         return;
     }
-    
+    NSLog(@"storeImageDataToDisk, key: %s", key);
     [self.diskCache setData:imageData forKey:key];
 }
 

@@ -101,6 +101,7 @@
     if (!url) {
         return nil;
     }
+    NSLog(@"SDImageLoadersManager requestImageWithURL, url: %@", url);
     NSArray<id<SDImageLoader>> *loaders = self.loaders;
     for (id<SDImageLoader> loader in loaders.reverseObjectEnumerator) {
         if ([loader canRequestImageForURL:url]) {
